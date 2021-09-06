@@ -12,16 +12,21 @@ import {
     TD,
     Label,
     ContainerForm,
-    ContainerFormInline 
+    ContainerFormInline,
+    IconButton,
+    SubContainerFormInline, 
 } from './styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSyncAlt, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faSyncAlt, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import colors from '../../GlobalStyles';
 import Button from '../../Components/Button';
 import Select from '../../Components/Select';
 import Input from '../../Components/Input';
 import { Formik } from 'formik';
 import * as yup from 'yup'
+import { useState } from 'react';
+import { User, UsersList } from '../../Models/User';
+import { useEffect } from 'react';
 
 interface Option {
     value: string;
@@ -54,21 +59,73 @@ const genres: SelectData = [
 
 const UserList = () => {
 
+    const [ registeredUsers, setRegisteredUsers ] = useState<UsersList>([])
+    const [ updated, setUpdated ] = useState(false)
+    const [ isUpdateButton, setIsUpdateButton ] = useState(false)
+    const [ idUserUpdated, setIdUserUpdated ] = useState(-1)
+    const [ indexUserUpdated, setIndexUserUpdated ] = useState(-1)
+
     const validationSchema = yup.object().shape({
-        
+        profile: yup
+          .string()
+          .required('O campo Perfil é obrigatório!'),
+        name: yup
+          .string()
+          .required('O campo Nome é obrigatório!'),
+        age: yup
+          .string()
+          .required('O campo Idade é obrigatório!'),
+        gender: yup
+          .string()
+          .required('O campo Gênero é obrigatório!'),
     })
 
+    const deleteUser = (index: number) => {
+        registeredUsers.splice(index, 1)
+        setUpdated(!updated)
+    }
+
+    useEffect(() => {
+    }, [registeredUsers, updated])
 
     return(
         <ContainerMain>
             <Formik
+                enableReinitialize
                 initialValues={{ profile: '', name: '', age: '', gender: ''}}
-                onSubmit={ async (values) => {
-                    
+                onSubmit={ async (values, resetForm) => {
+                    if(!isUpdateButton){
+                        let newId = Math.floor(Math.random() * (100000 - 1 + 1)) + 1;
+                        registeredUsers.push({
+                            id: newId,
+                            name: values.name,
+                            age: parseInt(values.age),
+                            profile: values.profile,
+                            gender: values.gender
+                        })
+                        values.profile = ''
+                        values.name = ''
+                        values.age = ''
+                        values.gender = ''
+                    }
+                    else{
+                        let user: User = {
+                            id: idUserUpdated,
+                            name: values.name,
+                            age: parseInt(values.age),
+                            gender: values.gender,
+                            profile: values.profile
+                        }
+                        registeredUsers[indexUserUpdated] = user;
+                        values.profile = ''
+                        values.name = ''
+                        values.age = ''
+                        values.gender = ''
+                    }  
                 }}
                 validationSchema={validationSchema}
             >
-            {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+            {({ handleChange, handleBlur, handleSubmit, values, errors, resetForm }) => (
                 <>
                     <ContainerCardDataBase>
                         <Card>
@@ -82,50 +139,57 @@ const UserList = () => {
                                         <TH></TH>
                                     </TR>
                                 </THead>
-                                <TBody>
-                                    <TR>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                    </TR>
-                                    <TR>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                    </TR>
-                                    <TR>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                    </TR>
-                                    <TR>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                    </TR>
-                                    <TR>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                    </TR>
-                                    <TR>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                        <TD>Contat</TD>
-                                    </TR>
-                                </TBody>
+                                {registeredUsers.length === 0 &&
+                                    <TBody>
+                                        <p>Nenhum usuário cadastrado!</p>
+                                    </TBody>
+                                }
+                                {registeredUsers.length > 0 &&
+                                    <TBody>
+                                        {registeredUsers.map((element: User, index: number) => {
+                                            return(
+                                                <TR key={element.id}>
+                                                    <TD>{element.name}</TD>
+                                                    <TD>{element.age}</TD>
+                                                    <TD>{element.gender}</TD>
+                                                    <TD>{element.profile}</TD>
+                                                    <TD style={{ textAlign: 'right' }}>
+                                                        <IconButton 
+                                                            onClick={
+                                                                () => {
+                                                                    values.name = element.name
+                                                                    values.age = element.age.toString()
+                                                                    values.profile = element.profile
+                                                                    values.gender = element.gender
+                                                                    setIdUserUpdated(element.id)
+                                                                    setIndexUserUpdated(index)
+                                                                    setIsUpdateButton(true)
+                                                                    setUpdated(!updated)
+                                                                }
+                                                            }    
+                                                        >
+                                                            <FontAwesomeIcon icon={ faPen } />
+                                                        </IconButton>
+                                                        <IconButton 
+                                                            onClick={
+                                                                () => {
+                                                                    registeredUsers.map((user, index) => {
+                                                                        if(user.id === element.id){
+                                                                            deleteUser(index)
+                                                                        }
+                                                                    })
+                                                                }
+                                                            }
+                                                        >
+                                                            <FontAwesomeIcon icon={ faTrashAlt } />
+                                                        </IconButton>
+                                                    </TD>
+                                                </TR>
+                                            )
+                                            })
+                                        }
+                                    </TBody>
+                                }
                             </Table>
                         </Card>
                     </ContainerCardDataBase>
@@ -133,15 +197,19 @@ const UserList = () => {
                         <Card>
                             <Label style={{ fontWeight: 'bold' }}>Novo Usuário</Label>
                             <ContainerForm>
-                                <Select options={users} labelSelect="Perfil" />
-                                <Input labelInput="Nome" />
+                                <Select onChange={handleChange} name="profile" value={values.profile} options={users} labelSelect="Perfil" errorMessage={errors.profile} />
+                                <Input onChange={handleChange} labelInput="Nome" name="name" value={values.name} errorMessage={errors.name} />
                                 <ContainerFormInline>
-                                    <Input labelInput="Idade" />
-                                    <Select options={genres} labelSelect="Gênero" />
+                                    <SubContainerFormInline style={{ width: '45%' }}>
+                                        <Input onChange={handleChange} labelInput="Idade" name="age" value={values.age} errorMessage={errors.age} />
+                                    </SubContainerFormInline>
+                                    <SubContainerFormInline style={{ width: '55%' }}>
+                                        <Select onChange={handleChange} name="gender" value={values.gender} options={genres} labelSelect="Gênero" errorMessage={errors.gender} />
+                                    </SubContainerFormInline>
                                 </ContainerFormInline>
                                 <ContainerFormInline style={{ justifyContent: 'flex-end' }}>
-                                    <Button label="Limpar" background={colors.buttonSecondary} labelColor={colors.black} />
-                                    <Button label="Salvar" background={colors.buttonPrimary} labelColor={colors.white} />
+                                    <Button onClick={() => {resetForm({})}} label="Limpar" background={colors.buttonSecondary} labelColor={colors.black} />
+                                    <Button onClick={handleSubmit} label="Salvar" background={colors.buttonPrimary} labelColor={colors.white}/>
                                 </ContainerFormInline>
                             </ContainerForm>
                         </Card>

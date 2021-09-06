@@ -1,7 +1,8 @@
 import { 
     ContainerMain,
     SelectMain,
-    Label 
+    Label,
+    ErroMessage, 
 } from './styles';
 
 interface Option {
@@ -12,23 +13,33 @@ interface Option {
 interface SelectProps {
     options?: Array<Option>;
     labelSelect: string;
+    name?: string;
+    value?: any;
+    onChange?: any;
+    errorMessage?: string;
 }
 
-const Select = ({ options, labelSelect }: SelectProps ) => {
+const Select = ({ options, labelSelect, name, value, onChange, errorMessage }: SelectProps ) => {
     return(
-        <ContainerMain>
-            <Label>{labelSelect}</Label>
-            <SelectMain>
-                {options?.map((element: Option) => {
-                        return(
-                            <option key={element.value} value={element.value} >
-                                {element.label}
-                            </option>
-                        )
-                    })
-                }
-            </SelectMain>
-        </ContainerMain>
+        <>
+            <ContainerMain>
+                <Label>{labelSelect}</Label>
+                <SelectMain value={value} name={name} onChange={onChange}>
+                    <option key='' value='' >
+                    
+                    </option>
+                    {options?.map((element: Option) => {
+                            return(
+                                <option key={element.value} value={element.value} >
+                                    {element.label}
+                                </option>
+                            )
+                        })
+                    }
+                </SelectMain>
+            </ContainerMain>
+            <ErroMessage>{errorMessage}</ErroMessage>
+        </>
     )
 }
 

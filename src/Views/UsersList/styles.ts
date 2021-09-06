@@ -72,7 +72,21 @@ export const ContainerForm = styled.div`
 `;
 
 export const ContainerFormInline = styled.div`
-    width: 95%;
+    width: 97%;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2.5%;
+`;
+
+export const SubContainerFormInline = styled.div`
+    
+`;
+
+export const IconButton = styled.button`
+    border: none;
+    padding: 1px;
+    background: none;
+    margin-right: 10px;
 `;
