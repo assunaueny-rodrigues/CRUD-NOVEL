@@ -121,6 +121,9 @@ const UserList = () => {
                         values.name = ''
                         values.age = ''
                         values.gender = ''
+                        setIsUpdateButton(false)
+                        setIndexUserUpdated(-1)
+                        setIdUserUpdated(-1)
                     }  
                 }}
                 validationSchema={validationSchema}
@@ -208,7 +211,14 @@ const UserList = () => {
                                     </SubContainerFormInline>
                                 </ContainerFormInline>
                                 <ContainerFormInline style={{ justifyContent: 'flex-end' }}>
-                                    <Button onClick={() => {resetForm({})}} label="Limpar" background={colors.buttonSecondary} labelColor={colors.black} />
+                                    <Button 
+                                        onClick={() => {
+                                            resetForm({})
+                                            setIsUpdateButton(false)
+                                            setIndexUserUpdated(-1)
+                                            setIdUserUpdated(-1)
+                                        }} 
+                                    label="Limpar" background={colors.buttonSecondary} labelColor={colors.black} />
                                     <Button onClick={handleSubmit} label="Salvar" background={colors.buttonPrimary} labelColor={colors.white}/>
                                 </ContainerFormInline>
                             </ContainerForm>
