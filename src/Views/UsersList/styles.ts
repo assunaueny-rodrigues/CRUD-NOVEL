@@ -52,6 +52,7 @@ export const TR = styled.tr`
 
 export const TH = styled.th`
     text-align: left;
+    min-width: 100px;
 `;
 
 export const TD = styled.td`

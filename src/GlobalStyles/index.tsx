@@ -10,7 +10,10 @@ const colors = {
 
     white: '#ffffff',
 
-    black: '#000000'
+    black: '#000000',
+    
+    iconUpdate: '#489CB7',
+    iconDelete: '#F58F8F'
 }
 
 export default colors;

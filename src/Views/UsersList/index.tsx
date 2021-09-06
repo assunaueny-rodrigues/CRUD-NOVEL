@@ -17,7 +17,7 @@ import {
     SubContainerFormInline, 
 } from './styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSyncAlt, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrashAlt, faUser, faCalendar, faVenusMars, faDatabase } from '@fortawesome/free-solid-svg-icons';
 import colors from '../../GlobalStyles';
 import Button from '../../Components/Button';
 import Select from '../../Components/Select';
@@ -86,7 +86,12 @@ const UserList = () => {
     }
 
     useEffect(() => {
-    }, [registeredUsers, updated])
+        let data = localStorage.getItem("database")
+        if(data !== null){
+            setRegisteredUsers(JSON.parse(data))
+        }
+        // setRegisteredUsers(JSON.parse(data))
+    }, [updated])
 
     return(
         <ContainerMain>
@@ -96,17 +101,27 @@ const UserList = () => {
                 onSubmit={ async (values, resetForm) => {
                     if(!isUpdateButton){
                         let newId = Math.floor(Math.random() * (100000 - 1 + 1)) + 1;
-                        registeredUsers.push({
+                        let user: User = {
                             id: newId,
                             name: values.name,
                             age: parseInt(values.age),
-                            profile: values.profile,
-                            gender: values.gender
+                            gender: values.gender,
+                            profile: values.profile
+                        }
+                        let checkExistence = false;
+                        registeredUsers.map((element) => {
+                            if(element.name === user.name){
+                                checkExistence = true
+                                alert("Já existe um usuário com esse NOME em nossa base de dados!")
+                            }
                         })
-                        values.profile = ''
-                        values.name = ''
-                        values.age = ''
-                        values.gender = ''
+                        if(!checkExistence){
+                            registeredUsers.push(user)
+                            values.profile = ''
+                            values.name = ''
+                            values.age = ''
+                            values.gender = ''
+                        }
                     }
                     else{
                         let user: User = {
@@ -124,7 +139,8 @@ const UserList = () => {
                         setIsUpdateButton(false)
                         setIndexUserUpdated(-1)
                         setIdUserUpdated(-1)
-                    }  
+                    }
+                    localStorage.setItem("database", JSON.stringify(registeredUsers))  
                 }}
                 validationSchema={validationSchema}
             >
@@ -132,21 +148,17 @@ const UserList = () => {
                 <>
                     <ContainerCardDataBase>
                         <Card>
+                            <Label style={{ padding: '3px', fontWeight: 'bold', fontSize: 20}}> <FontAwesomeIcon icon={ faDatabase }/> Banco de Dados</Label>
                             <Table>
                                 <THead>
                                     <TR>
-                                        <TH>Nome</TH>
-                                        <TH>Idade</TH>
-                                        <TH>Gênero</TH>
-                                        <TH>Perfil</TH>
+                                        <TH> <FontAwesomeIcon icon={ faUser }/> Nome</TH>
+                                        <TH> <FontAwesomeIcon icon={ faCalendar }/> Idade</TH>
+                                        <TH> <FontAwesomeIcon icon={ faVenusMars }/> Gênero</TH>
+                                        <TH> <FontAwesomeIcon icon={ faUser }/> Perfil</TH>
                                         <TH></TH>
                                     </TR>
                                 </THead>
-                                {registeredUsers.length === 0 &&
-                                    <TBody>
-                                        <p>Nenhum usuário cadastrado!</p>
-                                    </TBody>
-                                }
                                 {registeredUsers.length > 0 &&
                                     <TBody>
                                         {registeredUsers.map((element: User, index: number) => {
@@ -171,21 +183,23 @@ const UserList = () => {
                                                                 }
                                                             }    
                                                         >
-                                                            <FontAwesomeIcon icon={ faPen } />
+                                                            <FontAwesomeIcon icon={ faPen } color={colors.iconUpdate} />
                                                         </IconButton>
-                                                        <IconButton 
-                                                            onClick={
-                                                                () => {
-                                                                    registeredUsers.map((user, index) => {
-                                                                        if(user.id === element.id){
-                                                                            deleteUser(index)
-                                                                        }
-                                                                    })
+                                                        {element.profile !== "ADMINISTRADOR" && 
+                                                            <IconButton 
+                                                                onClick={
+                                                                    () => {
+                                                                        registeredUsers.map((user, index) => {
+                                                                            if(user.id === element.id){
+                                                                                deleteUser(index)
+                                                                            }
+                                                                        })
+                                                                    }
                                                                 }
-                                                            }
-                                                        >
-                                                            <FontAwesomeIcon icon={ faTrashAlt } />
-                                                        </IconButton>
+                                                            >
+                                                                <FontAwesomeIcon icon={ faTrashAlt } color={colors.iconDelete} />
+                                                            </IconButton>
+                                                        }
                                                     </TD>
                                                 </TR>
                                             )
@@ -194,6 +208,11 @@ const UserList = () => {
                                     </TBody>
                                 }
                             </Table>
+                            {registeredUsers.length === 0 &&
+                                <div>
+                                    <p>Nenhum usuário cadastrado!</p>
+                                </div>
+                            }
                         </Card>
                     </ContainerCardDataBase>
                     <ContainerCardForm>
