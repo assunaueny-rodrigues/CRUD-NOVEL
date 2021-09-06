@@ -27,6 +27,7 @@ import * as yup from 'yup'
 import { useState } from 'react';
 import { User, UsersList } from '../../Models/User';
 import { useEffect } from 'react';
+import { onlyLetters, onlyNumbers } from '../../validations/mask';
 
 interface Option {
     value: string;
@@ -220,10 +221,10 @@ const UserList = () => {
                             <Label style={{ fontWeight: 'bold' }}>Novo Usuário</Label>
                             <ContainerForm>
                                 <Select onChange={handleChange} name="profile" value={values.profile} options={users} labelSelect="Perfil" errorMessage={errors.profile} />
-                                <Input onChange={handleChange} labelInput="Nome" name="name" value={values.name} errorMessage={errors.name} />
+                                <Input onChange={handleChange} labelInput="Nome" name="name" value={onlyLetters(values.name)} errorMessage={errors.name} />
                                 <ContainerFormInline>
                                     <SubContainerFormInline style={{ width: '45%' }}>
-                                        <Input onChange={handleChange} labelInput="Idade" name="age" value={values.age} errorMessage={errors.age} />
+                                        <Input onChange={handleChange} labelInput="Idade" name="age" value={onlyNumbers(values.age)} errorMessage={errors.age} />
                                     </SubContainerFormInline>
                                     <SubContainerFormInline style={{ width: '55%' }}>
                                         <Select onChange={handleChange} name="gender" value={values.gender} options={genres} labelSelect="Gênero" errorMessage={errors.gender} />
