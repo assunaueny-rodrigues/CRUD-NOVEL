@@ -84,6 +84,7 @@ const UserList = () => {
     const deleteUser = (index: number) => {
         registeredUsers.splice(index, 1)
         setUpdated(!updated)
+        localStorage.setItem("database", JSON.stringify(registeredUsers)) 
     }
 
     useEffect(() => {
